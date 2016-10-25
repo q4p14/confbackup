@@ -42,9 +42,7 @@ trap cleanup SIGTERM SIGHUP SIGINT
 
 # Shutdown the Confluence service and wait as the service is pretty unresponsive
 su -c "$CONFDIR/bin/shutdown.sh" $CONFUSR
-trap cleanup SIGTERM SIGHUP SIGINT
 sleep 1m
-trap cleanup SIGTERM SIGHUP SIGINT
 
 # If the Conluence service didn't shutdown properly, try the catalina stop script, which
 # kills the Tomcat process
@@ -52,7 +50,6 @@ if [ -e "$CONFDIR/work/catalina.pid" ]; then
         su -c "$CONFDIR/bin/catalina.sh stop -force" $CONFUSR
         sleep 1m
 fi
-trap cleanup SIGTERM SIGHUP SIGINT
 
 # If Confluenced isn't running anymore, backup the Confluence home directory:
 # 1. Saving the Confluence home directory.
@@ -68,7 +65,6 @@ if [ ! -e "$CONFDIR/work/catalina.pid" ]; then
       else
         echo "$(today): Couldn't stop Confluence/Tomcat process" >> $LOGDIR/confbackup.log
 fi
-trap cleanup SIGTERM SIGHUP SIGINT
 
 # Restart Tomcat and the Confluence service
 su -c "$CONFDIR/bin/startup.sh" $CONFUSR
